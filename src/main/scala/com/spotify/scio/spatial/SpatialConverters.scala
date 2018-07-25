@@ -2,7 +2,7 @@ package com.spotify.scio.spatial
 
 import com.spotify.scio.ScioContext
 import com.spotify.scio.values.SCollection
-import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.{Envelope, Geometry, GeometryFactory, Polygon}
 import org.wololo.geojson._
 import org.wololo.geojson
 import org.wololo.jts2geojson.GeoJSONReader
@@ -33,6 +33,15 @@ object SpatialConverters {
         }
       }
         .map( geom => reader.read(geom).asInstanceOf[T] )
+    }
+  }
+
+
+  implicit class SpatialSCollection[T <: Geometry](self: SCollection[T]) {
+
+    def rangeQuery(x1: Double, x2: Double, y1: Double, y2: Double): SpatialSCollection[T] = {
+      val boundingBox = new GeometryFactory().toGeometry(new Envelope(x1, x2, y1, y2))
+      self.filter( geom => geom.within(boundingBox) )
     }
   }
 }
