@@ -1,18 +1,20 @@
-package com.spotify.scio.spatial
+package com.spotify.scio.spatial.coders
 
-import com.twitter.chill.KSerializer
-import org.locationtech.jts.geom._
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.{Input, Output}
-import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory
+import com.twitter.chill.KSerializer
+import org.locationtech.jts.geom._
+import org.locationtech.jts.geom.impl.CoordinateArraySequence
 
-class GeometrySerializer extends KSerializer[Geometry] {
+trait GeometrySerializer extends KSerializer[Geometry] {
 
   def write(kser: Kryo, out: Output, geom: Geometry): Unit = {
+    geom.getCoordinates
 //    kser.writeClassAndObject(out, geom.getEnvelope)
     kser.writeClassAndObject(out, geom.getCoordinates)
     kser.writeClassAndObject(out, geom.getSRID)
     kser.writeClassAndObject(out, geom.getPrecisionModel)
+    println("writing!")
 //    kser.writeClassAndObject(out, geom.getUserData)
   }
 
@@ -23,7 +25,26 @@ class GeometrySerializer extends KSerializer[Geometry] {
     val srid = kser.readClassAndObject(in).asInstanceOf[Int]
     val precisionModel = kser.readClassAndObject(in).asInstanceOf[PrecisionModel]
     val geometryFactory = new GeometryFactory(precisionModel, srid)
+    println("reading!")
+    createGeom(geometryFactory, coords)
     geometryFactory.createPolygon(coords)
      }
+
+  def createGeom(factory: GeometryFactory, coords: Array[Coordinate]): Geometry
+
 }
+
+class PolygonSerializer extends GeometrySerializer {
+  override def createGeom(factory: GeometryFactory, coords: Array[Coordinate]): Polygon = {
+    factory.createPolygon(coords)
+  }
+}
+
+class PointSerializer extends GeometrySerializer {
+  override def createGeom(factory: GeometryFactory, coords: Array[Coordinate]): Polygon = {
+    val coordSeq = new CoordinateArraySequence(coords)
+    factory.createPoint(coordSeq)
+  }
+}
+
 

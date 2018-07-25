@@ -1,9 +1,9 @@
-package com.spotify.scio.spatial
+package com.spotify.scio.spatial.coders
 
 import com.esotericsoftware.kryo.Kryo
 import com.spotify.scio.coders.KryoRegistrar
 import com.twitter.chill.{AllScalaRegistrar, IKryoRegistrar}
-import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.{Point, Polygon}
 
 @KryoRegistrar
 class GeometryKryoRegistrar extends IKryoRegistrar {
@@ -11,6 +11,8 @@ class GeometryKryoRegistrar extends IKryoRegistrar {
     val reg = new AllScalaRegistrar
     reg(k)
 
-    k.register(classOf[Geometry], new GeometrySerializer)
+    println("registering!")
+    k.register(classOf[Polygon], new PolygonSerializer)
+    k.register(classOf[Point], new PointSerializer)
   }
 }
