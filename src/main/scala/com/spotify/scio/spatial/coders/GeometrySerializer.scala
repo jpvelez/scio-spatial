@@ -41,7 +41,7 @@ class PolygonSerializer extends GeometrySerializer {
 }
 
 class PointSerializer extends GeometrySerializer {
-  override def createGeom(factory: GeometryFactory, coords: Array[Coordinate]): Polygon = {
+  override def createGeom(factory: GeometryFactory, coords: Array[Coordinate]): Point = {
     val coordSeq = new CoordinateArraySequence(coords)
     factory.createPoint(coordSeq)
   }
