@@ -27,7 +27,6 @@ trait GeometrySerializer extends KSerializer[Geometry] {
     val geometryFactory = new GeometryFactory(precisionModel, srid)
     println("reading!")
     createGeom(geometryFactory, coords)
-    geometryFactory.createPolygon(coords)
      }
 
   def createGeom(factory: GeometryFactory, coords: Array[Coordinate]): Geometry
