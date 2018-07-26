@@ -21,6 +21,7 @@ object SpatialConverters {
     // TODO check if jts2geojson or jts.io can cast directly to the right geomtype?
     // TODO add serializers linear ring, line string, and multi variants.
 
+
     def geoJSONFile[T <: Geometry: ClassTag](path: String): SCollection[T] = {
       lazy val reader = new GeoJSONReader
       sc.textFile(path)
@@ -39,7 +40,7 @@ object SpatialConverters {
 
   implicit class SpatialSCollection[T <: Geometry](self: SCollection[T]) {
 
-    def rangeQuery(x1: Double, x2: Double, y1: Double, y2: Double): SpatialSCollection[T] = {
+    def rangeQuery(x1: Double, x2: Double, y1: Double, y2: Double): SCollection[T] = {
       val boundingBox = new GeometryFactory().toGeometry(new Envelope(x1, x2, y1, y2))
       self.filter( geom => geom.within(boundingBox) )
     }
