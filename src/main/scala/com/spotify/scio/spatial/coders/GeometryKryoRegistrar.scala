@@ -11,7 +11,6 @@ class GeometryKryoRegistrar extends IKryoRegistrar {
     val reg = new AllScalaRegistrar
     reg(k)
 
-    println("registering!")
     k.register(classOf[Polygon], new PolygonSerializer)
     k.register(classOf[Point], new PointSerializer)
   }

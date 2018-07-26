@@ -14,7 +14,7 @@ trait GeometrySerializer extends KSerializer[Geometry] {
     kser.writeClassAndObject(out, geom.getCoordinates)
     kser.writeClassAndObject(out, geom.getSRID)
     kser.writeClassAndObject(out, geom.getPrecisionModel)
-    println("writing!")
+//    println("writing!")
 //    kser.writeClassAndObject(out, geom.getUserData)
   }
 
@@ -25,7 +25,7 @@ trait GeometrySerializer extends KSerializer[Geometry] {
     val srid = kser.readClassAndObject(in).asInstanceOf[Int]
     val precisionModel = kser.readClassAndObject(in).asInstanceOf[PrecisionModel]
     val geometryFactory = new GeometryFactory(precisionModel, srid)
-    println("reading!")
+//    println("reading!")
     createGeom(geometryFactory, coords)
      }
 
