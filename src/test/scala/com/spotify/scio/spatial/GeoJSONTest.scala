@@ -1,29 +1,13 @@
 package com.spotify.scio.spatial
 
-import com.spotify.scio.{ContextAndArgs, ScioContext}
+import com.spotify.scio.ScioContext
 import com.spotify.scio.spatial.SpatialConverters._
 import com.spotify.scio.testing.PipelineSpec
 import org.locationtech.jts.geom._
-import org.wololo.geojson.{FeatureCollection, GeoJSONFactory}
-import org.wololo.jts2geojson.GeoJSONReader
-
-import scala.concurrent.duration.Duration
+import com.spotify.scio.spatial.TestUtils.geoJSONToJTS
 
 
 class GeoJSONTest extends PipelineSpec {
-
-  val reader = new GeoJSONReader
-
-  def geoJSONToJTS(geoJSON: String, delimited: Boolean = false): Array[Geometry] = {
-    if (delimited) {
-      geoJSON.split("\n").map(reader.read)
-    }
-    else {
-      val geoms = GeoJSONFactory.create(geoJSON).asInstanceOf[FeatureCollection]
-        .getFeatures.map(_.getGeometry)
-      geoms.map(reader.read)
-    }
-  }
 
   val geoJSONPolygons =
     "{\"type\":\"Polygon\",\"coordinates\":[[[170.199999999997,-24.1999999999992]," +
@@ -62,16 +46,16 @@ class GeoJSONTest extends PipelineSpec {
 
   "geoJSONFile method" should "read newline-separated geoJSON objects containing polygon " +
     "geometries as JTS Polygons" in {
-    val expected = geoJSONToJTS(geoJSONPolygons, delimited = true).map(_.asInstanceOf[Polygon])
+    val expected = geoJSONToJTS[Polygon](geoJSONPolygons, delimited = true)
     val sc = ScioContext()
     val geoms = sc.geoJSONFile[Polygon]("./src/test/resources/polygons.geojson")
     geoms should containInAnyOrder(expected)
     sc.close()
   }
 
-  "geoJSONFile method" should "read point geometries features from a single FeatureCollection " +
+  "geoJSONFile method" should "read point geometry features from a single FeatureCollection " +
     "geoJSON object into JTS Points" in {
-    val expected = geoJSONToJTS(geoJSONFeatureCollection).map(_.asInstanceOf[Point])
+    val expected = geoJSONToJTS[Point](geoJSONFeatureCollection)
     val sc = ScioContext()
     val geoms = sc.geoJSONFile[Point]("./src/test/resources/nyc_subway_stops_sample.geojson")
     geoms should containInAnyOrder(expected)
