@@ -25,13 +25,12 @@ object SpatialConverters {
     def geoJSONFile[T <: Geometry: ClassTag](path: String): SCollection[T] = {
       lazy val reader = new GeoJSONReader
       sc.textFile(path)
+        .map[GeoJSON](GeoJSONFactory.create)
         .flatMap[geojson.Geometry] {
-        GeoJSONFactory.create(_) match {
           case fc: FeatureCollection => fc.getFeatures.map(_.getGeometry)
           case f: Feature => Some(f.getGeometry)
           case gc: GeometryCollection => gc.getGeometries
           case geom: geojson.Geometry => Some(geom)
-        }
       }
         .map( geom => reader.read(geom).asInstanceOf[T] )
     }
