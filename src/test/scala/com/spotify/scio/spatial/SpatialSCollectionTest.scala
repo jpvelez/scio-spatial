@@ -23,7 +23,7 @@ class SpatialSCollectionTest extends PipelineSpec {
     "service/\",\"name\":\"6th Ave & 16th St at SW corner\",\"line\":\"F-L-M-1-2-3\"},\"geometry" +
     "\":{\"type\":\"Point\",\"coordinates\":[-73.99612100013594,40.73871800068385]}}\n  ]\n}"
 
-  "A SpatialSCollection's range query method" should
+  "A SpatialSCollection's rangeQuery method" should
     "return all points within in a bounding box" in {
 
     val sc = ScioContext()
